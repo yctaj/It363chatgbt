@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISU Tutoring Scheduler (IT 179 & IT 168)</title>
+  <style>
+    :root{
+      /* ISU-inspired reds */
+      --bg:#1a0204; /* deep wine */
+      --bg2:#2b070a;
+      --panel:#2d0b0f;
+      --muted:#fda4af; /* rose-300 */
+      --text:#fff1f2; /* rose-50 */
+      --brand:#ce1126; /* ISU red */
+      --accent:#fb7185; /* rose-400 */
+      --danger:#fecaca; /* rose-200 */
+      --border:rgba(255,255,255,.12)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(206,17,38,.25), transparent),
+        radial-gradient(1000px 500px at 110% 10%, rgba(251,113,133,.18), transparent),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text)
+    }
+    a{color:inherit}
+    .container{max-width:1100px;margin:auto;padding:0 16px}
+    .nav{position:sticky;top:0;z-index:10;backdrop-filter:saturate(140%) blur(8px); background:rgba(43,7,10,.7); border-bottom:1px solid var(--border)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.3px}
+    .pill{font-size:12px;padding:2px 8px;border:1px solid rgba(255,255,255,.25);border-radius:999px;color:#ffe4e6;background:rgba(206,17,38,.18)}
+    .tabs button{border:0;background:transparent;color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer}
+    .tabs button.active{background:rgba(255,255,255,.12)}
+
+    .hero{padding:80px 0 40px;position:relative;overflow:hidden}
+    .glow{position:absolute;inset:-120px; background:radial-gradient(600px 300px at 20% 10%, rgba(206,17,38,.25), transparent), radial-gradient(600px 300px at 80% 20%, rgba(251,113,133,.2), transparent)}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03)); border:1px solid var(--border); border-radius:20px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1.1fr .9fr}}
+
+    h1{font-size:40px;line-height:1.1;margin:0}
+    @media(min-width:900px){h1{font-size:56px}}
+    .muted{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:var(--text);cursor:pointer}
+    .btn.primary{background:var(--brand);border-color:rgba(0,0,0,.15);color:white;font-weight:700}
+    .btn.danger{background:rgba(251,113,133,.15);color:#ffe4e6;border-color:rgba(251,113,133,.35)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    label{display:block;font-size:12px;color:#fecdd3}
+    input,select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+    .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+    .chip{padding:10px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.06);text-align:left}
+    .chip.sel{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
+    .chip.taken{opacity:.45;cursor:not-allowed}
+
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+    .card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.06)}
+    .footer{border-top:1px solid var(--border);padding:28px 0;margin-top:30px;color:#fecdd3;font-size:14px}
+    .tag{font-size:12px;color:#fecdd3}
+    .note{font-size:11px;color:#fecdd3}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div style="font-size:26px">ISU Tutoring</div>
+        <span class="pill">IT 179 & IT 168</span>
+      </div>
+      <div class="tabs">
+        <button data-tab="home" class="active">Home</button>
+        <button data-tab="book">Book Session</button>
+        <button data-tab="admin">Admin</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="home" class="hero">
+      <div class="glow"></div>
+      <div class="grid grid-2">
+        <div>
+          <h1>Book 45‑minute tutoring for <span style="color:var(--brand)">IT 179</span> or <span style="color:var(--brand)">IT 168</span>.</h1>
+          <p class="muted" style="margin:14px 0 0;max-width:60ch">
+            Separate hours per class. Admin can adjust windows and block out lunch. Email confirmations go to the student and Daniel automatically, plus a downloadable calendar file.
+          </p>
+          <ul class="muted" style="margin:16px 0 0;list-style:none;padding:0">
+            <li>• ⏱️ Sessions are 45 minutes</li>
+            <li>• 🕚 <b>IT 179</b>: default 11:00 AM–1:00 PM</li>
+            <li>• 🕗 <b>IT 168</b>: default 8:00 AM–5:00 PM (variable)</li>
+            <li>• 🍽️ Admin can block a lunch break</li>
+            <li>• 🔔 Email drafts open for student & admin</li>
+            <li>• 🗓️ .ICS calendar download</li>
+          </ul>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button class="btn primary" data-jump="book">Book a Session</button>
+            <button class="btn" id="whatBring">What should I bring?</button>
+          </div>
+        </div>
+        <div>
+          <div class="panel" style="position:relative;overflow:hidden">
+            <div style="position:absolute;inset:-40px;background:radial-gradient(300px 160px at 20% 10%,rgba(206,17,38,.25),transparent), radial-gradient(300px 160px at 80% 20%, rgba(251,113,133,.22), transparent)"></div>
+            <div style="position:relative">
+              <div style="aspect-ratio:16/9;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg, rgba(206,17,38,.35), rgba(251,113,133,.22));">
+                <div style="text-align:center">
+                  <div style="font-size:64px">🐦‍🔥</div>
+                  <div style="font-weight:800;font-size:22px">Go Redbirds!</div>
+                  <div class="muted" style="font-size:13px">Clean UI • Fast booking • Auto reminders</div>
+                </div>
+              </div>
+              <div class="cards" style="margin-top:14px">
+                <div class="card" style="text-align:center"><div style="font-weight:900;font-size:22px">2</div><div class="note">Courses</div></div>
+                <div class="card" style="text-align:center"><div style="font-weight:900;font-size:22px">45m</div><div class="note">Per session</div></div>
+                <div class="card" style="text-align:center"><div style="font-weight:900;font-size:22px">Lunch</div><div class="note">Admin blockable</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOOK -->
+    <section id="book" style="display:none;padding:26px 0 40px">
+      <h2 style="font-size:28px;font-weight:900;margin:0 0 6px">Book a Session</h2>
+      <p class="muted" style="margin:0 0 16px">Choose course, date, and time. Slots adapt to that course's hours minus any lunch block.</p>
+      <div class="grid" style="grid-template-columns:280px 1fr">
+        <div>
+          <label>Course</label>
+          <select id="courseSelect">
+            <option>IT 179</option>
+            <option>IT 168</option>
+          </select>
+          <div style="height:10px"></div>
+          <label>Choose date</label>
+          <input type="date" id="dateInput" />
+          <div class="note" style="margin-top:8px">Times shown in your local timezone.</div>
+        </div>
+        <div>
+          <div class="chips" id="slotList"></div>
+          <form id="bookForm" style="margin-top:14px" autocomplete="off">
+            <div class="grid" style="grid-template-columns:1fr 1fr">
+              <div>
+                <label>Full name</label>
+                <input id="name" placeholder="Reggie Redbird" />
+              </div>
+              <div>
+                <label>ISU email</label>
+                <input id="email" type="email" placeholder="netid@ilstu.edu" />
+                <div id="emailHint" class="note"></div>
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+              <div>
+                <label>Course (locked to selection)</label>
+                <input id="courseFixed" disabled />
+              </div>
+              <div>
+                <label>Topic / Goals</label>
+                <input id="topic" placeholder="Loops, arrays, lab prep, etc." />
+              </div>
+            </div>
+            <button class="btn primary" id="confirmBtn" style="margin-top:12px" disabled>Confirm Booking & Send Emails</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin" style="display:none;padding:26px 0 40px">
+      <h2 style="font-size:28px;font-weight:900;margin:0 0 6px">Admin Panel</h2>
+      <div id="adminLogin" class="panel" style="max-width:520px">
+        <div class="muted" style="margin-bottom:8px">Enter the admin PIN to manage hours, lunch, notifications, and bookings.</div>
+        <form id="loginForm" class="grid" style="grid-template-columns:1fr auto; gap:10px">
+          <input id="pin" type="password" placeholder="PIN (try 179admin)" />
+          <button class="btn primary">Sign In</button>
+        </form>
+        <div class="note" style="margin-top:8px">Demo only. Replace PIN & wire to real auth later.</div>
+      </div>
+
+      <div id="adminPanel" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 14px">
+          <div class="tag">Signed in</div>
+          <button class="btn" id="signOut">Sign out</button>
+        </div>
+        <div class="panel" style="margin-bottom:14px">
+          <div class="grid" style="grid-template-columns:240px 1fr; gap:12px; align-items:end">
+            <div>
+              <label>Manage settings for course</label>
+              <select id="adminCourse">
+                <option>IT 179</option>
+                <option>IT 168</option>
+              </select>
+            </div>
+            <div class="note">Each course has its own hours and optional lunch block.</div>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:360px 1fr">
+          <div class="panel">
+            <h3 style="margin:0 0 8px">Hours & Notifications</h3>
+            <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+              <div>
+                <label>Start (HH:MM)</label>
+                <input id="startTime" type="time" />
+              </div>
+              <div>
+                <label>End (HH:MM)</label>
+                <input id="endTime" type="time" />
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <div>
+                <label>Lunch start (optional)</label>
+                <input id="lunchStart" type="time" />
+              </div>
+              <div>
+                <label>Lunch end (optional)</label>
+                <input id="lunchEnd" type="time" />
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <label>Admin notification email</label>
+              <input id="adminEmail" type="email" />
+            </div>
+            <div class="note" style="margin-top:8px">Changes save instantly. Sessions must finish by end time. Any slot overlapping lunch is hidden.</div>
+          </div>
+          <div class="panel">
+            <h3 style="margin:0 0 8px">Current Bookings</h3>
+            <div id="bookings" class="cards"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <span id="year"></span> ISU Tutoring • Demo site</div>
+  </footer>
+
+  <script>
+    // ====== Config & Storage ======
+    const STORAGE_KEY = 'isu_tutor_app_state_v2_html';
+    const ADMIN_PIN = '179admin';
+    const DEFAULT_STATE = {
+      adminEmail: 'daniel@example.edu',
+      courses: {
+        'IT 179': { windowStart: '11:00', windowEnd: '13:00', lunchStart: '', lunchEnd: '' },
+        'IT 168': { windowStart: '08:00', windowEnd: '17:00', lunchStart: '12:00', lunchEnd: '13:00' }
+      },
+      bookings: []
+    };
+
+    const loadState = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(DEFAULT_STATE); } catch { return structuredClone(DEFAULT_STATE); } }
+    const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+
+    let state = loadState();
+
+    // ====== Helpers ======
+    const pad = (n) => (n<10? '0'+n : ''+n);
+    const toLocalISODate = (d=new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const parseHHMM = (t)=>{ if(!t) return null; const [h,m]=t.split(':').map(Number); return {h,m}; };
+    const addMinutes = (date, mins)=> new Date(date.getTime()+mins*60000);
+    const toDateAt = (dateStr, hhmm)=>{ const {h,m}=parseHHMM(hhmm); const [Y,M,D]=dateStr.split('-').map(Number); return new Date(Y, M-1, D, h, m, 0, 0); };
+    const fmt12h = (hhmm)=>{ const {h,m}=parseHHMM(hhmm); const am=h>=12?'PM':'AM'; const hr=((h+11)%12)+1; return `${hr}:${pad(m)} ${am}`; };
+    const uid = ()=> Math.random().toString(36).slice(2,10);
+
+    function overlaps(aStart, aEnd, bStart, bEnd){ return aStart < bEnd && bStart < aEnd; }
+
+    function genSlotsForCourse(course, dateStr, minutes=45){
+      const cfg = state.courses[course];
+      const slots=[]; if(!cfg) return slots;
+      const start=toDateAt(dateStr,cfg.windowStart); const end=toDateAt(dateStr,cfg.windowEnd);
+      const lunchS = cfg.lunchStart ? toDateAt(dateStr, cfg.lunchStart) : null;
+      const lunchE = cfg.lunchEnd ? toDateAt(dateStr, cfg.lunchEnd) : null;
+      let t=new Date(start);
+      while(true){ const e=addMinutes(t, minutes); if(e> end) break;
+        // skip if overlaps lunch
+        if(lunchS && lunchE && overlaps(t, e, lunchS, lunchE)) { t=addMinutes(t,15); continue; }
+        slots.push({start:`${pad(t.getHours())}:${pad(t.getMinutes())}`, end:`${pad(e.getHours())}:${pad(e.getMinutes())}`});
+        t=addMinutes(t,15);
+      }
+      return slots;
+    }
+
+    function toICS({title, description, startISO, endISO, location=''}){
+      const dt=(iso)=> iso.replace(/[-:]/g,'').split('.')[0]+'Z';
+      return [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ISU//Tutoring//EN','BEGIN:VEVENT',
+        `UID:${uid()}@isu.tutoring`,
+        `DTSTAMP:${dt(new Date().toISOString())}`,
+        `DTSTART:${dt(startISO)}`,
+        `DTEND:${dt(endISO)}`,
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${description.replace(/\n/g,'\\n')}`,
+        `LOCATION:${location}`,
+        'END:VEVENT','END:VCALENDAR'
+      ].join('\r\n');
+    }
+
+    function download(name, content, mime='text/calendar;charset=utf-8'){
+      const blob=new Blob([content],{type:mime});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
+    }
+
+    // ====== DOM ======
+    const $ = (sel)=> document.querySelector(sel);
+    const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
+
+    const sections = { home: $('#home'), book: $('#book'), admin: $('#admin') };
+    const tabBtns = $$('.tabs button');
+
+    function showTab(id){ for(const k in sections){ sections[k].style.display = (k===id? 'block' : 'none'); } tabBtns.forEach(b=>b.classList.toggle('active', b.dataset.tab===id)); window.scrollTo({top:0, behavior:'smooth'}); }
+
+    tabBtns.forEach(b=> b.addEventListener('click', ()=> showTab(b.dataset.tab)));
+    $('[data-tab="home"]').dataset.tab='home';
+    $('[data-tab="book"]').dataset.tab='book';
+    $('[data-tab="admin"]').dataset.tab='admin';
+
+    // jump buttons
+    $$('#home [data-jump="book"]').forEach(btn=> btn.addEventListener('click', ()=> showTab('book')));
+    $('#whatBring').addEventListener('click', ()=> alert('Bring lab questions, code samples, and your laptop. Topics: loops, arrays, functions, debugging.'));
+
+    // Footer year
+    $('#year').textContent = new Date().getFullYear();
+
+    // ====== Booking UI ======
+    const courseSelect = $('#courseSelect');
+    const dateInput = $('#dateInput');
+    const courseFixed = $('#courseFixed');
+    const slotList = $('#slotList');
+    const form = $('#bookForm');
+    const nameEl = $('#name');
+    const emailEl = $('#email');
+    const topicEl = $('#topic');
+    const emailHint = $('#emailHint');
+    const confirmBtn = $('#confirmBtn');
+
+    function syncCourseFixed(){ courseFixed.value = courseSelect.value; }
+
+    dateInput.value = toLocalISODate();
+    syncCourseFixed();
+
+    function refreshSlots(){
+      slotList.innerHTML='';
+      const course = courseSelect.value;
+      const slots= genSlotsForCourse(course, dateInput.value, 45);
+      const reserved = new Set(state.bookings.filter(b=> b.date===dateInput.value && b.course===course).map(b=> `${b.start}-${b.end}`));
+      if(!slots.length){ slotList.innerHTML = `<div class="note">No available slots in the current window (or all blocked for lunch).</div>`; return; }
+      let firstSelectable=null;
+      slots.forEach(s=>{
+        const key=`${s.start}-${s.end}`; const taken = reserved.has(key);
+        const btn=document.createElement('button');
+        btn.type='button'; btn.className='chip'+(taken?' taken':'');
+        btn.dataset.key=key; btn.innerHTML = `<div style=\"font-weight:700\">${fmt12h(s.start)} – ${fmt12h(s.end)}</div><div class=\"note\">45 minutes</div>${taken?'<div class=\"note\" style=\"color:#ffe4e6\">Booked</div>':''}`;
+        if(!taken){ btn.addEventListener('click', ()=> selectSlot(s)); if(!firstSelectable) firstSelectable = btn; }
+        slotList.appendChild(btn);
+      });
+      if(firstSelectable) firstSelectable.click();
+    }
+
+    let selectedSlot = null;
+    function selectSlot(s){ selectedSlot = s; $$('#slotList .chip').forEach(c=> c.classList.toggle('sel', c.dataset.key === `${s.start}-${s.end}`)); validateForm(); }
+
+    function validateForm(){
+      const okEmail = /@ilstu\.edu$/i.test(emailEl.value||''); emailHint.textContent = emailEl.value ? (okEmail ? 'Valid ISU address' : 'Must end with @ilstu.edu') : '';
+      const ok = selectedSlot && okEmail && (nameEl.value||'').trim() && (topicEl.value||'').trim();
+      confirmBtn.disabled = !ok; return ok;
+    }
+
+    [nameEl, emailEl, topicEl].forEach(el=> el.addEventListener('input', validateForm));
+    [courseSelect, dateInput].forEach(el=> el.addEventListener('input', ()=>{ syncCourseFixed(); refreshSlots(); validateForm(); }));
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault(); if(!validateForm()) return;
+      const course = courseSelect.value;
+      const payload = { id: uid(), course, date: dateInput.value, start: selectedSlot.start, end: selectedSlot.end, name: nameEl.value.trim(), email: emailEl.value.trim(), topic: topicEl.value.trim() };
+      state.bookings.push(payload); saveState(state); refreshSlots(); renderBookings();
+
+      // ICS + Emails
+      const startISO = toDateAt(payload.date, payload.start).toISOString();
+      const endISO = toDateAt(payload.date, payload.end).toISOString();
+      const ics = toICS({ title:`Tutoring: ${course} with ${payload.name}`, description:`Topic: ${payload.topic}\nStudent: ${payload.name} (${payload.email})\nCourse: ${course}`, startISO, endISO, location:'ISU Tutoring Center' });
+      download(`${course.replace(/\s/g,'')}_Tutoring_${payload.date}_${payload.start.replace(':','')}.ics`, ics);
+
+      const subject = encodeURIComponent(`Booking Confirmed: ${course} ${payload.date} ${fmt12h(payload.start)} - ${fmt12h(payload.end)}`);
+      const body = encodeURIComponent(`Hello,%0A%0AYour 45-minute tutoring session is confirmed.%0A%0ACourse: ${course}%0ADate: ${payload.date}%0ATime: ${fmt12h(payload.start)} – ${fmt12h(payload.end)}%0ATopic: ${payload.topic}%0ALocation: ISU Tutoring Center%0A%0AThanks!`);
+      window.open(`mailto:${payload.email}?subject=${subject}&body=${body}`, '_blank');
+      window.open(`mailto:${state.adminEmail}?subject=${subject}&body=${body}`, '_blank');
+      alert('Booked! Calendar file downloaded and email drafts opened for student and admin.');
+
+      form.reset(); syncCourseFixed(); selectedSlot=null; validateForm();
+    });
+
+    // ====== Admin ======
+    const loginBox = $('#adminLogin');
+    const adminPanel = $('#adminPanel');
+    const loginForm = $('#loginForm');
+    const pinEl = $('#pin');
+    const adminCourse = $('#adminCourse');
+    const startTimeEl = $('#startTime');
+    const endTimeEl = $('#endTime');
+    const lunchStartEl = $('#lunchStart');
+    const lunchEndEl = $('#lunchEnd');
+    const adminEmailEl = $('#adminEmail');
+    const bookingsEl = $('#bookings');
+
+    function syncAdminControls(){
+      const c = adminCourse.value; const cfg = state.courses[c];
+      startTimeEl.value = cfg.windowStart; endTimeEl.value = cfg.windowEnd; lunchStartEl.value = cfg.lunchStart || ''; lunchEndEl.value = cfg.lunchEnd || ''; adminEmailEl.value = state.adminEmail;
+    }
+
+    loginForm.addEventListener('submit', (e)=>{ e.preventDefault(); if(pinEl.value===ADMIN_PIN){ loginBox.style.display='none'; adminPanel.style.display='block'; syncAdminControls(); renderBookings(); } else { alert('Invalid PIN'); } });
+    $('#signOut').addEventListener('click', ()=>{ adminPanel.style.display='none'; loginBox.style.display='block'; pinEl.value=''; });
+
+    [adminCourse].forEach(el=> el.addEventListener('input', ()=>{ syncAdminControls(); refreshSlots(); }));
+
+    [startTimeEl, endTimeEl, lunchStartEl, lunchEndEl].forEach(el=> el.addEventListener('input', ()=>{
+      const c = adminCourse.value; const cfg = state.courses[c];
+      cfg.windowStart = startTimeEl.value || cfg.windowStart;
+      cfg.windowEnd = endTimeEl.value || cfg.windowEnd;
+      cfg.lunchStart = lunchStartEl.value || '';
+      cfg.lunchEnd = lunchEndEl.value || '';
+      saveState(state);
+      refreshSlots();
+    }));
+
+    adminEmailEl.addEventListener('input', ()=>{ state.adminEmail = adminEmailEl.value || state.adminEmail; saveState(state); });
+
+    function renderBookings(){
+      bookingsEl.innerHTML='';
+      if(!state.bookings.length){ bookingsEl.innerHTML = '<div class="note">No bookings yet.</div>'; return; }
+      state.bookings.slice().reverse().forEach(b=>{
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <div style="font-weight:700">${b.course} • ${b.date} • ${fmt12h(b.start)}–${fmt12h(b.end)}</div>
+          <div class="note">${b.name} — ${b.email}</div>
+          <div class="note">Topic: ${b.topic}</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn danger" data-cancel="${b.id}">Cancel</button>
+            <a class="btn" href="mailto:${b.email}?subject=${encodeURIComponent('Reminder: '+b.course+' '+b.date+' '+fmt12h(b.start))}&body=${encodeURIComponent('Hi '+b.name+',%0A%0AFriendly reminder for your tutoring session for '+b.course+' on '+b.date+' at '+fmt12h(b.start)+'.%0A%0AThanks!')}">Email Reminder</a>
+          </div>`;
+        bookingsEl.appendChild(card);
+      });
+      bookingsEl.querySelectorAll('[data-cancel]').forEach(btn=> btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-cancel');
+        state.bookings = state.bookings.filter(x=> x.id!==id); saveState(state); renderBookings(); refreshSlots();
+      }));
+    }
+
+    // ====== Init ======
+    const b1=document.querySelector('[data-tab="home"]'); const b2=document.querySelector('[data-tab="book"]'); const b3=document.querySelector('[data-tab="admin"]'); [b1,b2,b3].forEach(b=> b.dataset.tab=b.textContent.toLowerCase().includes('home')?'home': (b.textContent.toLowerCase().includes('book')?'book':'admin'));
+    (function show(){ for(const k in sections){ sections[k].style.display = (k==='home'? 'block' : 'none'); } })();
+
+    // default selections
+    courseSelect.value = 'IT 179';
+    syncCourseFixed();
+    dateInput.value = toLocalISODate();
+
+    refreshSlots();
+    validateForm();
+  </script>
+</body>
+</html>
